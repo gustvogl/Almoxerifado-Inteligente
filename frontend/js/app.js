@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.lucide?.createIcons();
   const page = document.body.dataset.page;
   document.querySelector(`[data-nav="${page}"]`)?.classList.add('active');
+  enhancePageDesign(page);
 
   const sidebar = document.getElementById('sidebar');
   document.getElementById('menuBtn')?.addEventListener('click', () => sidebar?.classList.toggle('open'));
@@ -151,6 +152,48 @@ document.addEventListener('DOMContentLoaded', () => {
     window.lucide?.createIcons();
   }
 });
+
+function enhancePageDesign(page) {
+  const pageWrap = document.querySelector('.page-wrap');
+  if (!pageWrap) return;
+
+  const dashboardHero = pageWrap.querySelector(':scope > .hero-panel');
+  if (dashboardHero && !dashboardHero.querySelector('.hero-visual')) {
+    dashboardHero.classList.add('hero-panel-enhanced');
+    dashboardHero.insertAdjacentHTML('beforeend', '<div class="hero-visual" aria-hidden="true"><span></span><span></span><span></span></div>');
+  }
+
+  const first = pageWrap.firstElementChild;
+  if (!first || first.classList.contains('hero-panel')) return;
+
+  if (first.classList.contains('page-hero-header')) return;
+
+  if (first.classList.contains('panel-head') && first.querySelector('.page-title')) {
+    first.classList.add('page-hero-header');
+    first.querySelector(':scope > div')?.classList.add('page-hero-copy');
+    first.dataset.visual = page || 'default';
+    first.insertAdjacentHTML('beforeend', '<div class="page-hero-visual" aria-hidden="true"><span></span><span></span><span></span></div>');
+    return;
+  }
+
+  if (first.classList.contains('eyebrow')) {
+    const title = first.nextElementSibling;
+    const subtitle = title?.nextElementSibling;
+    if (!title?.classList.contains('page-title')) return;
+
+    const hero = document.createElement('div');
+    hero.className = 'page-hero-header';
+    hero.dataset.visual = page || 'default';
+    const copy = document.createElement('div');
+    copy.className = 'page-hero-copy';
+    pageWrap.insertBefore(hero, first);
+    hero.appendChild(copy);
+    copy.appendChild(first);
+    copy.appendChild(title);
+    if (subtitle?.classList.contains('page-subtitle')) copy.appendChild(subtitle);
+    hero.insertAdjacentHTML('beforeend', '<div class="page-hero-visual" aria-hidden="true"><span></span><span></span><span></span></div>');
+  }
+}
 
 function toast(message, type = 'ok') {
   const el = document.getElementById('toast');
