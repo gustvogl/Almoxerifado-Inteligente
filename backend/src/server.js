@@ -17,8 +17,14 @@ const app = express();
 const port = Number(process.env.PORT || 3000);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendPath = path.resolve(__dirname, '../../frontend');
+const staticOptions = { etag: true, maxAge: '1h' };
 
 app.use(cors());
+app.use((_req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(self)');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
 app.use(express.json({ limit: '3mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,8 +42,8 @@ app.use('/api/dashboard', dashboardRouter);
 app.use('/api/ai', aiRouter);
 
 app.get('/login.html', (_req, res) => res.sendFile(path.join(frontendPath, 'login.html')));
-app.use('/css', express.static(path.join(frontendPath, 'css')));
-app.use('/js', express.static(path.join(frontendPath, 'js')));
+app.use('/css', express.static(path.join(frontendPath, 'css'), staticOptions));
+app.use('/js', express.static(path.join(frontendPath, 'js'), staticOptions));
 app.get('/', requirePageAuth, (_req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
 app.use('/pages', requirePageAuth, express.static(path.join(frontendPath, 'pages')));
 
