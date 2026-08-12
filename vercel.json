@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "functions": {
     "index.js": {
-      "includeFiles": "frontend/**/*.html",
+      "includeFiles": "frontend/**",
       "maxDuration": 30
     }
   },
